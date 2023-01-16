@@ -5,6 +5,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system emacs))
 
 (define-public emacs-org-cliplink
@@ -171,3 +172,36 @@ trigrams.")
 ;;      "Org-roam-ui provides a web interface for navigating around notes created
 ;; within Org-roam.")
 ;;     (license license:gpl3+)))
+
+(define-public emacs-mastodon-unstable
+  (package
+    (name "emacs-mastodon-unstable")
+    (version "3b35b51a36976d64bc3368d6bd8cce5edb350839")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://codeberg.org/martianh/mastodon.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1d39y7g8ffbw9fgnlqqxm3w2gijmzaigf9qni59f84yx3iw8gpqa"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               ;; Move the source files to the top level, which is included in
+               ;; the EMACSLOADPATH.
+               (add-after 'unpack 'move-source-files
+                 (lambda _
+                   (let ((el-files (find-files "./lisp" ".*\\.el$")))
+                     (for-each (lambda (f)
+                                 (rename-file f (basename f)))
+                               el-files)))))))
+    (propagated-inputs
+     (list emacs-request))
+    (home-page "https://codeberg.org/martianh/mastodon.el")
+    (synopsis "Emacs client for Mastodon")
+    (description "@code{mastodon.el} is an Emacs client for Mastodon, the
+federated microblogging social network.")
+    (license license:gpl3+)))
