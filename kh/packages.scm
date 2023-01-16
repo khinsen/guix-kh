@@ -145,108 +145,66 @@
      "OCRmyPDF adds an OCR text layer to scanned PDF files, allowing them to be searched")
     (license #f)))
 
-(define-public minimacy-server
-  (package
-    (name "minimacy-server")
-    (version "0.6.2")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ambermind/minimacy/")
-                   (commit "0.6.2")))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1x9i1spf79lq3kxms55dx7lf8pl84cyblq313sjyfpr9l187ailb"))
-             ;;(patches (search-patches "minimacy.patch"))
-             (patches (list "/home/hinsen/src/guix-kh/kh/patches/minimacy.patch"))
-))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #false
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-path
-                    (lambda _
-                      (substitute* "src/hw.c"
-                                   (("minimacy-in-gnu-store")
-                                    (assoc-ref %outputs "out")))))
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (chdir "unix")
-             (invoke "make" "nox")
-             (chdir "..")))
-         (replace 'install
-                  (lambda _
-                    (let ((output (assoc-ref %outputs "out")))
-                      (install-file "bin/minimacy" (string-append output "/bin"))
-                      (mkdir-p (string-append output "/rom"))
-                      (mkdir-p (string-append output "/system"))
-                      (copy-recursively "rom" (string-append output "/rom"))
-                      (copy-recursively "system" (string-append output "/system"))))))))
-    (synopsis "Minimalist computation system")
-    (description
-     "")
-    (home-page "https://minimacy.net/")
-    (license license:gpl2)))
-
-
-(define-public minimacy
-  (package
-    (name "minimacy")
-    (version "0.6.2")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/ambermind/minimacy/")
-                   (commit "0.6.2")))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1x9i1spf79lq3kxms55dx7lf8pl84cyblq313sjyfpr9l187ailb"))
-             ;;(patches (search-patches "minimacy.patch"))
-             (patches (list "/home/hinsen/src/guix-kh/kh/patches/minimacy.patch"))))
-    (build-system gnu-build-system)
-    (inputs (list libx11 libxext alsa-lib mesa glu))
-    (outputs '("out"     ; the core
-               "X11"     ; for GUI programs, with X11 and ALSA
-               "X11GL")) ; for GUI programs, with X11, OpenGL, and ALSA
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-path
-                    (lambda _
-                      (substitute* "src/hw.c"
-                                   (("minimacy-in-gnu-store")
-                                    (assoc-ref %outputs "out")))))
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (chdir "unix")
-             (invoke "make" "nox")
-             (for-each delete-file
-                       (find-files "../obj" "\\.o$"))
-             (invoke "make" "x11")
-             (for-each delete-file
-                       (find-files "../obj" "\\.o$"))
-             (invoke "make" "x11gl")
-             (chdir "..")))
-         (replace 'install
-           (lambda _
-             (let ((output (assoc-ref %outputs "out")))
-               (install-file "bin/minimacy" (string-append output "/bin"))
-               (mkdir-p (string-append output "/rom"))
-               (mkdir-p (string-append output "/system"))
-               (copy-recursively "rom" (string-append output "/rom"))
-               (copy-recursively "system" (string-append output "/system")))
-             (let ((output (assoc-ref %outputs "X11")))
-               (install-file "bin/minimacyX11" (string-append output "/bin")))
-             (let ((output (assoc-ref %outputs "X11GL")))
-               (install-file "bin/minimacyX11GL" (string-append output "/bin")))))
-         (delete 'check))))
-    (synopsis "Minimalist computing system")
-    (description
-     "Minimacy is an open-source minimalist computing technology.  It consists of a programming language (compiler plus virtual machine) and a library, written such that the whole system can be fully understood by a single person.")
-    (home-page "https://minimacy.net/")
-    (license license:gpl2)))
+;; (define-public minimacy
+;;   (package
+;;     (name "minimacy")
+;;     (version "0.6.2")
+;;     (source (origin
+;;              (method git-fetch)
+;;              (uri (git-reference
+;;                    (url "https://github.com/ambermind/minimacy/")
+;;                    (commit "0.6.2")))
+;;              (file-name (git-file-name name version))
+;;              (sha256
+;;               (base32
+;;                "1x9i1spf79lq3kxms55dx7lf8pl84cyblq313sjyfpr9l187ailb"))
+;;              ;;(patches (search-patches "minimacy.patch"))
+;;              (patches (list "/home/hinsen/src/guix-kh/kh/patches/minimacy.patch"))))
+;;     (build-system gnu-build-system)
+;;     (inputs (list libx11 libxext alsa-lib mesa glu))
+;;     (outputs '("out"     ; the core
+;;                "X11"     ; for GUI programs, with X11 and ALSA
+;;                "X11GL")) ; for GUI programs, with X11, OpenGL, and ALSA
+;;     (arguments
+;;      `(#:phases
+;;        (modify-phases %standard-phases
+;;          (add-after 'unpack 'patch-path
+;;                     (lambda _
+;;                       (substitute* "src/hw.c"
+;;                                    (("minimacy-in-gnu-store")
+;;                                     (assoc-ref %outputs "out")))))
+;;          (delete 'configure)
+;;          (replace 'build
+;;            (lambda _
+;;              (chdir "unix")
+;;              (invoke "make" "nox")
+;;              (for-each delete-file
+;;                        (find-files "../obj" "\\.o$"))
+;;              (invoke "make" "x11")
+;;              (for-each delete-file
+;;                        (find-files "../obj" "\\.o$"))
+;;              (invoke "make" "x11gl")
+;;              (chdir "..")))
+;;          (replace 'install
+;;            (lambda _
+;;              (let ((output (assoc-ref %outputs "out")))
+;;                (install-file "bin/minimacy" (string-append output "/bin"))
+;;                (mkdir-p (string-append output "/rom"))
+;;                (mkdir-p (string-append output "/system"))
+;;                (copy-recursively "rom" (string-append output "/rom"))
+;;                (copy-recursively "system" (string-append output "/system")))
+;;              (let ((output (assoc-ref %outputs "X11")))
+;;                (install-file "bin/minimacyX11" (string-append output "/bin")))
+;;              (let ((output (assoc-ref %outputs "X11GL")))
+;;                (install-file "bin/minimacyX11GL" (string-append output "/bin")))))
+;;          (delete 'check))))
+;;     (synopsis "Minimalist computing system")
+;;     (description
+;;      "Minimacy is an open-source minimalist computing technology.
+;; It consists of a programming language (compiler plus virtual machine)
+;; and a library, written such that the whole system can be fully
+;; understood by a single person.  An optional extension to the virtual
+;; machine adds X11 and ALSA for user interfaces, another extension
+;; adds OpenGL support.")
+;;     (home-page "https://minimacy.net/")
+;;     (license license:gpl2)))
