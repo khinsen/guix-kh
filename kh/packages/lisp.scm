@@ -1,4 +1,5 @@
 (define-module (kh packages lisp)
+  #:use-module (gnu packages)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lisp-check)
@@ -535,3 +536,59 @@ Python's WSGI and Ruby's Rack.")
 
 (define-public ecl-clack
   (sbcl-package->ecl-package sbcl-clack))
+
+;; the update to CLOG has not yet been submitted to Guix
+
+(define-public sbcl-clog
+  (package
+    (name "sbcl-clog")
+    (version "2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rabbibotton/clog")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-clog" version))
+       (sha256
+        (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     (list sbcl-3bmd
+           sbcl-alexandria
+           sbcl-atomics
+           sbcl-bordeaux-threads
+           sbcl-cl-isaac
+           sbcl-cl-pass
+           sbcl-cl-ppcre
+           sbcl-cl-sqlite
+           sbcl-cl-template
+           sbcl-clack
+           sbcl-closer-mop
+           sbcl-colorize
+           sbcl-dbi
+           sbcl-hunchentoot
+           sbcl-lack
+           sbcl-mgl-pax
+           sbcl-parse-float
+           sbcl-quri
+           sbcl-trivial-open-browser
+           sbcl-trivial-gray-streams
+           sbcl-websocket-driver))
+    (arguments
+     '(#:asd-systems '("clog" #|"clog/docs" "clog/tools"|#)
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-symbol-name
+                    (lambda _
+                      (substitute* "source/clog-docs.lisp"
+                        (("clog:@CLOG-MANUAL")
+                         "clog::@CLOG_MANUAL")))))))
+    (home-page "https://github.com/rabbibotton/clog")
+    (synopsis "Common Lisp Omnificent GUI")
+    (description
+     "This package provides a Common Lisp web framework for building GUI
+applications.  CLOG can take the place, or work along side, most cross platform
+GUI frameworks and website frameworks.  The CLOG package starts up the
+connectivity to the browser or other websocket client (often a browser embedded
+in a native template application).")
+    (license license:bsd-3)))
