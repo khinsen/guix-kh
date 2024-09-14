@@ -583,13 +583,14 @@ Python's WSGI and Ruby's Rack.")
            sbcl-trivial-gray-streams
            sbcl-websocket-driver))
     (arguments
-     '(#:asd-systems '("clog" #|"clog/docs" "clog/tools"|#)
+     '(#:asd-systems '("clog" "clog/docs" "clog/tools")
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-symbol-name
-                    (lambda _
-                      (substitute* "source/clog-docs.lisp"
-                        (("clog:@CLOG-MANUAL")
-                         "clog::@CLOG_MANUAL")))))))
+                  ;; (add-after 'unpack 'fix-symbol-name
+                  ;;   (lambda _
+                  ;;     (substitute* "source/clog-docs.lisp"
+                  ;;       (("clog:@CLOG-MANUAL")
+                  ;;        "clog::@CLOG_MANUAL"))))
+)))
     (home-page "https://github.com/rabbibotton/clog")
     (synopsis "Common Lisp Omnificent GUI")
     (description
@@ -599,4 +600,31 @@ GUI frameworks and website frameworks.  The CLOG package starts up the
 connectivity to the browser or other websocket client (often a browser embedded
 in a native template application).")
     (license license:bsd-3)))
+
+;; The ACE plugin for CLOG - big JavaScript dependency!
+
+
+
+(define-public sbcl-clog-ace
+  (let ((commit "61f3c2e48402e043738b3079271f64a3b515af28")
+        (revision "1"))
+    (package
+      (name "sbcl-clog-ace")
+      (version (string-append "0.0." revision))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rabbibotton/clog-ace")
+               (commit commit)))
+         (file-name (git-file-name "cl-clog-ace" version))
+         (sha256
+          (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-clog))
+      (home-page "https://github.com/rabbibotton/clog-ace")
+      (synopsis "CLOG Plugin for the ACE Editor")
+      (description "")
+      (license license:bsd-3))))
 
