@@ -432,7 +432,14 @@ and a core image .")
          (file-name (git-file-name "lack" version))
          (sha256
           (base32 "1yrhhzn8ywdjxwpaxzlnsm2lslhy45r89brn8gh5n08mdyjlp4l2"))
-         (patches (search-patches "patches/lack.patch"))))
+         (patches
+          (parameterize
+              ((%patch-path
+                (map
+                 (lambda (directory)
+                   (string-append directory "/kh/packages/patches"))
+                 %load-path)))
+            (search-patches "lack.patch")))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        (list sbcl-prove
@@ -592,3 +599,4 @@ GUI frameworks and website frameworks.  The CLOG package starts up the
 connectivity to the browser or other websocket client (often a browser embedded
 in a native template application).")
     (license license:bsd-3)))
+

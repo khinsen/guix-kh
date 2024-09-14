@@ -31,19 +31,24 @@
        (sha256 (base32
                 "1zq0wwvmqsl9y71546dr0aygzn9gjjfiw19hlcq87s929y4p6ckw"))
        (patches
-        ;; Likely to be included in next version
-        (search-patches "patches/isync-openssl3-fix.patch"))))
+        (parameterize
+            ((%patch-path
+              (map
+               (lambda (directory)
+                 (string-append directory "/kh/packages/patches"))
+               %load-path)))
+          (search-patches "isync-openssl3-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
      (list
-       #:phases
-       #~(modify-phases %standard-phases
-           (add-after 'install 'substitute-openssl-path
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (substitute* (string-append #$output "/bin/mbsync-get-cert")
-                 (("openssl s_client")
-                  (string-append (search-input-file inputs "/bin/openssl")
-                                 " s_client"))))))))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'substitute-openssl-path
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (substitute* (string-append #$output "/bin/mbsync-get-cert")
+                (("openssl s_client")
+                 (string-append (search-input-file inputs "/bin/openssl")
+                                " s_client"))))))))
     (native-inputs
      (list perl))
     (inputs
