@@ -662,3 +662,27 @@ in a native template application).")
       (description "")
       (license license:bsd-3))))
 
+(define-public sbcl-clog-terminal
+  (let ((commit "304e3308e050abe0184ecc904cd039986e54b34f")
+        (revision "1"))
+    (package
+      (name "sbcl-clog-terminal")
+      (version (string-append "0.0." revision))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rabbibotton/clog-terminal")
+               (commit commit)))
+         (file-name (git-file-name "cl-clog-terminal" version))
+         (sha256
+          (base32 "1pvrja8fvdzqmiqzl23lb7665vcpx9lhwxahns81wlykkyx7cjd5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-clog))
+      (arguments
+       '(#:asd-systems '("clog-terminal")))
+      (home-page "https://github.com/rabbibotton/clog-terminal")
+      (synopsis "CLOG-Terminal plug-in for jQueryTerminal ")
+      (description "")
+      (license license:bsd-3))))
