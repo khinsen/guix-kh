@@ -26,7 +26,7 @@
              (commit "1386b7cbc65a0e41913101d778877b067cbcf0a4")))
        (file-name (git-file-name "cl-mel-base" version))
        (sha256
-        (base32 "0bxprqabkw179cj6g8yi8d56xll8yji30rlns6dhbl3979sj7sax"))))
+        (base32 "0nk2x0nr0czjmjmz6ki6i54k3lha4ylpkjlmr2w7jh74x4gvp6hf"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      (list sbcl-flexi-streams
