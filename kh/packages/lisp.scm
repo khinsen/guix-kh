@@ -624,8 +624,16 @@ connectivity to the browser or other websocket client (often a browser embedded
 in a native template application).")
     (license license:bsd-3)))
 
-;; The ACE plugin for CLOG - big JavaScript dependency!
-
+(define-public sbcl-clog-docs
+  (package
+    (inherit sbcl-clog)
+    (name "sbcl-clog-docs")
+    (inputs
+     (modify-inputs (package-inputs sbcl-clog)
+       (prepend sbcl-clog
+                sbcl-3bmd)))
+    (arguments
+     '(#:asd-systems '("clog/docs")))))
 
 
 (define-public sbcl-clog-ace
