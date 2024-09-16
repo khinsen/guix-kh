@@ -591,8 +591,7 @@ Python's WSGI and Ruby's Rack.")
         (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf"))))
     (build-system asdf-build-system/sbcl)
     (inputs
-     (list sbcl-3bmd
-           sbcl-alexandria
+     (list sbcl-alexandria
            sbcl-atomics
            sbcl-bordeaux-threads
            sbcl-cl-isaac
@@ -608,19 +607,13 @@ Python's WSGI and Ruby's Rack.")
            sbcl-lack
            sbcl-mgl-pax
            sbcl-parse-float
+           sbcl-print-licenses
            sbcl-quri
            sbcl-trivial-open-browser
            sbcl-trivial-gray-streams
            sbcl-websocket-driver))
     (arguments
-     '(#:asd-systems '("clog" "clog/docs" "clog/tools")
-       #:phases (modify-phases %standard-phases
-                  ;; (add-after 'unpack 'fix-symbol-name
-                  ;;   (lambda _
-                  ;;     (substitute* "source/clog-docs.lisp"
-                  ;;       (("clog:@CLOG-MANUAL")
-                  ;;        "clog::@CLOG_MANUAL"))))
-)))
+     '(#:asd-systems '("clog")))
     (home-page "https://github.com/rabbibotton/clog")
     (synopsis "Common Lisp Omnificent GUI")
     (description
