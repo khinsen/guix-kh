@@ -705,3 +705,56 @@ in a native template application).")
     (arguments
      '(#:asd-systems '("clog/tools")))))
 
+;; https://github.com/jingtaozf/literate-lisp
+
+(define-public sbcl-literate-lisp
+  (let ((commit "76d4d2c16ab08296d58e0ef3c41861b615e697c0"))
+    (package
+      (name "sbcl-literate-lisp")
+      (version "0.6")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jingtaozf/literate-lisp")
+               (commit commit)))
+         (file-name (git-file-name "literate-lisp" version))
+         (sha256
+          (base32 "0smxf0a62dnwcfxsbsdkx4n5nqx9dlxdz6c2vfivxpqld6d6ap02"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-cl-ppcre
+             sbcl-iterate
+             sbcl-cl-fad))
+      (native-inputs
+       (list sbcl-fiveam))
+      (home-page "https://github.com/jingtaozf/literate-lisp")
+      (synopsis "Load Common Lisp code blocks from Org-mode files")
+      (description "")
+      (license license:expat))))
+
+;; https://github.com/jingtaozf/s-graphviz
+
+(define-public sbcl-s-graphviz
+  (let ((commit "a06d9573f0d4e21751b0ae782515b63a40ad6eae"))
+    (package
+      (name "sbcl-s-graphviz")
+      (version "2.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jingtaozf/s-graphviz")
+               (commit commit)))
+         (file-name (git-file-name "s-graphviz" version))
+         (sha256
+          (base32 "1841xwci6y1gfhg15464wrlnw8xgsh1mwbg4yy2y7di02q4fbma2"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-iterate))
+      (native-inputs
+       (list sbcl-literate-lisp))
+      (home-page "https://github.com/jingtaozf/s-graphviz")
+      (synopsis "An s-expression representation of GraphViz DOT Language")
+      (description "")
+      (license license:expat))))
