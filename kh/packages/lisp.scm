@@ -686,3 +686,22 @@ in a native template application).")
       (synopsis "CLOG-Terminal plug-in for jQueryTerminal ")
       (description "")
       (license license:bsd-3))))
+
+(define-public sbcl-clog-tools
+  (package
+    (inherit sbcl-clog)
+    (name "sbcl-clog-tools")
+    (inputs
+     (list sbcl-clog
+           sbcl-clog-ace
+           sbcl-clog-terminal
+           sbcl-s-base64
+           sbcl-cl-indentify
+           sbcl-definitions
+           sbcl-parenscript
+           sbcl-plump
+           sbcl-slime-swank
+           sbcl-trivial-main-thread))
+    (arguments
+     '(#:asd-systems '("clog/tools")))))
+
