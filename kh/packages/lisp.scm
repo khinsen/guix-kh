@@ -758,3 +758,62 @@ in a native template application).")
       (synopsis "An s-expression representation of GraphViz DOT Language")
       (description "")
       (license license:expat))))
+
+
+(define-public sbcl-kh-dependencies
+  (let ((commit "7beab14f0d5c94a3eda797b7fd46bfd4f40d9b01")
+        (revision "2"))
+    (package
+      (name "sbcl-kh-dependencies")
+      (version (string-append "0.1." revision))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://codeberg.org/khinsen/kh-dependencies")
+               (commit commit)))
+         (file-name (git-file-name "kh-dependencies" version))
+         (sha256
+          (base32 "1xl8bkha9nf3097l9lfj4xicvj3i5x3lh50x6f2d1r2xa7779wmb"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-3bmd
+             sbcl-alexandria
+             sbcl-arrows
+             sbcl-babel
+             sbcl-ciel
+             sbcl-cl-base64
+             sbcl-cl-base32
+             sbcl-cl-fad
+             sbcl-cl-mime
+             sbcl-cl-qprint
+             sbcl-cl-store
+             sbcl-cl-unicode
+             sbcl-cl-who
+             sbcl-clog
+             sbcl-clog-ace
+             sbcl-closer-mop
+             sbcl-closure-template
+             sbcl-drakma
+             sbcl-flexi-streams
+             sbcl-fset
+             sbcl-hunchentoot
+             sbcl-local-time
+             sbcl-mel-base
+             sbcl-parse-float
+             sbcl-plump
+             sbcl-plump-sexp
+             sbcl-quickproject
+             sbcl-s-graphviz
+             sbcl-serapeum
+             sbcl-cl-str
+             sbcl-slime-swank
+             sbcl-tooter
+             sbcl-trivial-clipboard
+             sbcl-trivial-open-browser
+             sbcl-vom
+             ))
+      (home-page "https://codeberg.org/khinsen/kh-dependencies")
+      (synopsis "All my CL dependencies")
+      (description "")
+      (license license:gpl3+))))
