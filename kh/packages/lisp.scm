@@ -635,6 +635,7 @@ in a native template application).")
     (arguments
      '(#:asd-systems '("clog/docs")))))
 
+;; The ACE plugin for CLOG - big JavaScript dependency!
 
 (define-public sbcl-clog-ace
   (let ((commit "61f3c2e48402e043738b3079271f64a3b515af28")
@@ -650,10 +651,12 @@ in a native template application).")
                (commit commit)))
          (file-name (git-file-name "cl-clog-ace" version))
          (sha256
-          (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf"))))
+          (base32 "0bwg0b04ff0dgm9k6fw976amdz0s35lss3nv5ywznx9plahi5s5h"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        (list sbcl-clog))
+      (arguments
+       '(#:asd-systems '("clog-ace")))
       (home-page "https://github.com/rabbibotton/clog-ace")
       (synopsis "CLOG Plugin for the ACE Editor")
       (description "")
