@@ -196,7 +196,7 @@ sockets and the SPLIT-SEQUENCE package for some parsing needs.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "07lwy3sfcsl7qxw4xnwcl2gb892fflimbh5v4fjim9vl1k5wlj6p"))))
+          (base32 "03r5cv01q4yg0a2dv2ckn2xys53y9isrq3hkp0dqa96q8wrindlh"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        (list sbcl-log4cl))
