@@ -178,6 +178,12 @@ in a native template application).")
     (arguments
      '(#:asd-systems '("clog/tools")))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Image and CIEL REPL with all packages I use
+;; except for my own (which are always loaded
+;; from source).
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; https://github.com/jingtaozf/literate-lisp
 
 (define-public sbcl-literate-lisp
@@ -232,10 +238,9 @@ in a native template application).")
       (description "")
       (license license:expat))))
 
-
 (define-public sbcl-kh-dependencies
-  (let ((commit "7beab14f0d5c94a3eda797b7fd46bfd4f40d9b01")
-        (revision "2"))
+  (let ((commit "b6ab769bd72f65a61fcc9782ffdcd25d1cb8f6cc")
+        (revision "1"))
     (package
       (name "sbcl-kh-dependencies")
       (version (string-append "0.1." revision))
@@ -247,7 +252,7 @@ in a native template application).")
                (commit commit)))
          (file-name (git-file-name "kh-dependencies" version))
          (sha256
-          (base32 "1xl8bkha9nf3097l9lfj4xicvj3i5x3lh50x6f2d1r2xa7779wmb"))))
+          (base32 "0hflpxar4dnhg993mxhjakz4a0q54xf4viy6jssy4303z3lm8wn8"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        (list sbcl-3bmd
@@ -284,9 +289,28 @@ in a native template application).")
              sbcl-tooter
              sbcl-trivial-clipboard
              sbcl-trivial-open-browser
-             sbcl-vom
-             ))
+             sbcl-vom))
+      (outputs '("out" "image"))
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'create-asdf-configuration 'build-image
+              (lambda* (#:key outputs #:allow-other-keys)
+                (build-image
+                 (string-append (assoc-ref outputs "image") "/bin/sbcl-kh")
+                 outputs
+                 #:dependencies '("kh-dependencies")))))))
       (home-page "https://codeberg.org/khinsen/kh-dependencies")
       (synopsis "All my CL dependencies")
       (description "")
       (license license:gpl3+))))
+
+(define-public sbcl-ciel-repl-kh
+  (package
+    (inherit sbcl-ciel-repl)
+    (name "sbcl-ciel-repl-kh")
+    (inputs
+     (modify-inputs (package-inputs sbcl-ciel-repl)
+       (prepend sbcl-kh-dependencies)))
+    (synopsis "CIEL REPL with more built-in packages")))
