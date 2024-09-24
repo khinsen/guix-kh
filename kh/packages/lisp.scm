@@ -353,7 +353,8 @@ in a native template application).")
                 (build-image
                  (string-append (assoc-ref outputs "image") "/bin/sbcl-kh")
                  outputs
-                 #:dependencies '("kh-dependencies")))))))
+                 #:dependencies '("kh-dependencies"
+                                  "clack-handler-hunchentoot")))))))
       (home-page "https://codeberg.org/khinsen/kh-dependencies")
       (synopsis "All my CL dependencies")
       (description "")
