@@ -3,6 +3,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lisp-check)
+  #:use-module (gnu packages freedesktop) ;; for xdg-util in sbcl-clog
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -47,21 +48,67 @@
 ;; CLOG and updated dependencies
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define-public sbcl-websocket-driver
+  (let ((commit "17ba5535fb1c4fe43e7e8ac786e8b61a174fcba3")
+        (revision "0"))
+    (package
+      (name "sbcl-websocket-driver")
+      (version (git-version "0.2.0" revision commit))
+      (home-page "https://github.com/fukamachi/websocket-driver")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/websocket-driver")
+               (commit commit)))
+         (file-name (git-file-name "cl-websocket-driver" version))
+         (sha256
+          (base32 "1lj6xarr62199ladkml7qpgi86w94j4djrp54v9ch0zakni3rhj2"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-babel
+             sbcl-clack
+             sbcl-fast-http
+             sbcl-fast-io
+             sbcl-fast-websocket
+             sbcl-event-emitter
+             sbcl-sha1
+             sbcl-cl-base64
+             sbcl-split-sequence
+             sbcl-bordeaux-threads
+             sbcl-quri))
+      (synopsis "WebSocket server/client for Common Lisp")
+      (description "This library provides a WebSocket server and client
+implementation for Common Lisp.")
+      (license license:bsd-2))))
+
+
+
 ;; the update to CLOG has not yet been submitted to Guix
 
 (define-public sbcl-clog
   (package
     (name "sbcl-clog")
-    (version "2.3")
+    (version "2.3.0-ebb4d598")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rabbibotton/clog")
-             (commit (string-append "v" version))))
+             (url "https://github.com/khinsen/clog")
+             (commit "ebb4d598a9a927266d2ee1accf07ec326f1f24b9")))
        (file-name (git-file-name "cl-clog" version))
        (sha256
-        (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf"))))
+        (base32 "169hr8jlp02kzh9yirg0rdmprqrwny1vlkbr5c5zxa4a6vlpncz5")))
+     ;; v2.3
+     ;; (origin
+     ;;   (method git-fetch)
+     ;;   (uri (git-reference
+     ;;         (url "https://github.com/rabbibotton/clog")
+     ;;         (commit (string-append "v" version))))
+     ;;   (file-name (git-file-name "cl-clog" version))
+     ;;   (sha256
+     ;;    (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf")))
+)
     (build-system asdf-build-system/sbcl)
     (inputs
      (list sbcl-alexandria
@@ -82,11 +129,17 @@
            sbcl-parse-float
            sbcl-print-licenses
            sbcl-quri
-           sbcl-trivial-open-browser
            sbcl-trivial-gray-streams
-           sbcl-websocket-driver))
+           sbcl-websocket-driver
+           xdg-utils))
     (arguments
-     '(#:asd-systems '("clog")))
+     `(#:asd-systems '("clog")
+       #:phases
+       (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "source/clog-system.lisp"
+                 (("xdg-open") (search-input-file inputs "/bin/xdg-open"))))))))
     (home-page "https://github.com/rabbibotton/clog")
     (synopsis "Common Lisp Omnificent GUI")
     (description
