@@ -48,9 +48,11 @@
 ;; CLOG and updated dependencies
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; submitted to Guix
+
 (define-public sbcl-websocket-driver
   (let ((commit "17ba5535fb1c4fe43e7e8ac786e8b61a174fcba3")
-        (revision "0"))
+        (revision "1"))
     (package
       (name "sbcl-websocket-driver")
       (version (git-version "0.2.0" revision commit))
@@ -81,7 +83,6 @@
       (description "This library provides a WebSocket server and client
 implementation for Common Lisp.")
       (license license:bsd-2))))
-
 
 
 ;; the update to CLOG has not yet been submitted to Guix
