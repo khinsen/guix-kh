@@ -4,6 +4,7 @@
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lisp-check)
   #:use-module (gnu packages freedesktop) ;; for xdg-util in sbcl-clog
+  #:use-module (gnu packages web) ;; for esbuild in sbcl-clog
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -88,68 +89,83 @@ implementation for Common Lisp.")
 ;; the update to CLOG has not yet been submitted to Guix
 
 (define-public sbcl-clog
-  (package
-    (name "sbcl-clog")
-    (version "2.3.0-ebb4d598")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/khinsen/clog")
-             (commit "ebb4d598a9a927266d2ee1accf07ec326f1f24b9")))
-       (file-name (git-file-name "cl-clog" version))
-       (sha256
-        (base32 "169hr8jlp02kzh9yirg0rdmprqrwny1vlkbr5c5zxa4a6vlpncz5")))
-     ;; v2.3
-     ;; (origin
-     ;;   (method git-fetch)
-     ;;   (uri (git-reference
-     ;;         (url "https://github.com/rabbibotton/clog")
-     ;;         (commit (string-append "v" version))))
-     ;;   (file-name (git-file-name "cl-clog" version))
-     ;;   (sha256
-     ;;    (base32 "175zb93kxnxv0hr8435mkm94fqhjq51wq55ybd55kcyk5y5h2xaf")))
-)
-    (build-system asdf-build-system/sbcl)
-    (inputs
-     (list sbcl-alexandria
-           sbcl-atomics
-           sbcl-bordeaux-threads
-           sbcl-cl-isaac
-           sbcl-cl-pass
-           sbcl-cl-ppcre
-           sbcl-cl-sqlite
-           sbcl-cl-template
-           sbcl-clack
-           sbcl-closer-mop
-           sbcl-colorize
-           sbcl-dbi
-           sbcl-hunchentoot
-           sbcl-lack
-           sbcl-mgl-pax
-           sbcl-parse-float
-           sbcl-print-licenses
-           sbcl-quri
-           sbcl-trivial-gray-streams
-           sbcl-websocket-driver
-           xdg-utils))
-    (arguments
-     `(#:asd-systems '("clog")
-       #:phases
-       (modify-phases %standard-phases
+  (let ((commit "d3afbd16bc5adf8afd648f942d8085b9ae37f25f")
+        (revision "0"))
+    (package
+      (name "sbcl-clog")
+      (version (git-version "2.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rabbibotton/clog")
+               (commit commit)))
+         (file-name (git-file-name "cl-clog" version))
+         (sha256
+          (base32 "169hr8jlp02kzh9yirg0rdmprqrwny1vlkbr5c5zxa4a6vlpncz5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-alexandria
+             sbcl-atomics
+             sbcl-bordeaux-threads
+             sbcl-cl-isaac
+             sbcl-cl-pass
+             sbcl-cl-ppcre
+             sbcl-cl-sqlite
+             sbcl-cl-template
+             sbcl-clack
+             sbcl-closer-mop
+             sbcl-colorize
+             sbcl-dbi
+             sbcl-hunchentoot
+             sbcl-lack
+             sbcl-mgl-pax
+             sbcl-parse-float
+             sbcl-print-licenses
+             sbcl-quri
+             sbcl-trivial-gray-streams
+             sbcl-websocket-driver
+             xdg-utils))
+      (native-inputs
+       `(("js-jquery"
+          ,(origin
+             (method url-fetch)
+             (uri "https://code.jquery.com/jquery-3.7.1.js")
+             (sha256
+              (base32
+               "1zicjv44sx6n83vrkd2lwnlbf7qakzh3gcfjw0lhq48b5z55ma3q"))))
+         ("js-jquery-ui"
+          ,(origin
+             (method url-fetch)
+             (uri "https://jqueryui.com/resources/download/jquery-ui-1.13.2.zip")
+             (sha256
+              (base32
+               "0xsppsyjqvq8d00dklpj595czwh9fqlkyr1ab6hmk08pdnbn4dzp"))))
+         ("esbuild" ,esbuild)))
+      (arguments
+       `(#:asd-systems '("clog")
+         #:phases
+         (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "source/clog-system.lisp"
-                 (("xdg-open") (search-input-file inputs "/bin/xdg-open"))))))))
-    (home-page "https://github.com/rabbibotton/clog")
-    (synopsis "Common Lisp Omnificent GUI")
-    (description
-     "This package provides a Common Lisp web framework for building GUI
+                 (("xdg-open") (search-input-file inputs "/bin/xdg-open")))))
+           (add-after 'unpack 'replace-bundled-minified-javascript
+             (lambda* (#:key inputs #:allow-other-keys)
+               (invoke "esbuild"
+                       (assoc-ref inputs "js-jquery")
+                       "--minify"
+                       (string-append "--outfile=static-files/js/jquery.min.js"))))
+           )))
+      (home-page "https://github.com/rabbibotton/clog")
+      (synopsis "Common Lisp Omnificent GUI")
+      (description
+       "This package provides a Common Lisp web framework for building GUI
 applications.  CLOG can take the place, or work along side, most cross platform
 GUI frameworks and website frameworks.  The CLOG package starts up the
 connectivity to the browser or other websocket client (often a browser embedded
 in a native template application).")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public sbcl-clog-docs
   (package
